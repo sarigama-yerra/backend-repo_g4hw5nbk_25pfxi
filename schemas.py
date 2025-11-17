@@ -1,48 +1,53 @@
 """
-Database Schemas
+Portls Database Schemas
 
-Define your MongoDB collection schemas here using Pydantic models.
-These schemas are used for data validation in your application.
-
-Each Pydantic model represents a collection in your database.
-Model name is converted to lowercase for the collection name:
-- User -> "user" collection
-- Product -> "product" collection
-- BlogPost -> "blogs" collection
+Each Pydantic model represents a collection. Class name lowercased = collection name.
 """
-
+from typing import List, Optional
 from pydantic import BaseModel, Field
-from typing import Optional
 
-# Example schemas (replace with your own):
 
-class User(BaseModel):
-    """
-    Users collection schema
-    Collection name: "user" (lowercase of class name)
-    """
-    name: str = Field(..., description="Full name")
-    email: str = Field(..., description="Email address")
-    address: str = Field(..., description="Address")
-    age: Optional[int] = Field(None, ge=0, le=120, description="Age in years")
-    is_active: bool = Field(True, description="Whether user is active")
+class Planet(BaseModel):
+    name: str = Field(..., description="Planet name")
+    tagline: Optional[str] = Field(None, description="Short descriptive tagline")
+    description: Optional[str] = Field(None, description="Long description of the planet")
+    distance_ly: float = Field(..., ge=0, description="Distance in light-years")
+    difficulty: str = Field(..., description="Adventure difficulty: Easy/Medium/Hard")
+    featured_creatures: List[str] = Field(default_factory=list, description="List of notable creatures")
+    toy_categories: List[str] = Field(default_factory=list, description="Toy categories found here")
+    age_recommendation: str = Field(..., description="Recommended ages text (e.g., 5-10)")
+    travel_time: str = Field(..., description="Estimated wormhole travel time text")
+    atmosphere: Optional[str] = Field(None, description="Atmosphere & terrain summary")
+    hero_image: Optional[str] = Field(None, description="Image/illustration URL")
 
-class Product(BaseModel):
-    """
-    Products collection schema
-    Collection name: "product" (lowercase of class name)
-    """
-    title: str = Field(..., description="Product title")
-    description: Optional[str] = Field(None, description="Product description")
-    price: float = Field(..., ge=0, description="Price in dollars")
-    category: str = Field(..., description="Product category")
-    in_stock: bool = Field(True, description="Whether product is in stock")
 
-# Add your own schemas here:
-# --------------------------------------------------
+class Toy(BaseModel):
+    name: str
+    planet: str = Field(..., description="Name of the source planet")
+    theme: str
+    age_range: str
+    description: Optional[str] = None
+    price: float = Field(..., ge=0)
+    image: Optional[str] = None
 
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+
+class Badge(BaseModel):
+    name: str
+    description: Optional[str] = None
+    icon: Optional[str] = None
+
+
+class Achievement(BaseModel):
+    title: str
+    description: Optional[str] = None
+    icon: Optional[str] = None
+
+
+class Profile(BaseModel):
+    username: str
+    avatar_type: str = Field(..., description="alien | kid | robot | creature")
+    badges: List[Badge] = Field(default_factory=list)
+    achievements: List[Achievement] = Field(default_factory=list)
+    saved_planets: List[str] = Field(default_factory=list)
+    collectibles: List[str] = Field(default_factory=list)
+    travel_log: List[str] = Field(default_factory=list)
